@@ -7,6 +7,7 @@
 *.o
 *.obj
 
+
 # Precompiled Headers
 *.gch
 *.pch
@@ -67,3 +68,11 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+# Images
+DIV2K_valid_LR_bicubic/
+
+#Others
+out/
+Tarea3_SDP.pdf
+*.json
