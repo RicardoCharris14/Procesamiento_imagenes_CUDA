@@ -70,7 +70,7 @@ Testing/
 .cache/
 
 # Images
-DIV2K_valid_LR_bicubic/
+dataset/
 
 #Others
 out/
