@@ -10,13 +10,15 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstdlib>
+#include <fstream>
+#include <sys/stat.h>
 using namespace cimg_library;
 
 // Configuracion
 static const int NUM_IMAGES = 100;   // m
-static const int SIZE_IMAGES = 512;  // tamaño de imagen (para redimensionar)
+static const int SIZE_IMAGES = 100;  // tamaño de imagen (para redimensionar)
 static const int CHANNELS = 3;       // RGB
-static const int SIZE_TILES = 64;    // tamaño de tile para el kernel de covarianza (memoria compartida)
+static const int SIZE_TILES = 32;    // tamaño de tile para el kernel de covarianza (memoria compartida)
 static const std::string DATASET_DIR = "dataset/";
 
 
@@ -233,6 +235,43 @@ int main() {
     cudaEventDestroy(finComputo);
     cudaEventDestroy(inicioCopiaD2H);
     cudaEventDestroy(finCopiaD2H);
+
+    // Nombre de la carpeta y archivo de salida
+    std::string folder_name = "data";
+    std::string file_path = folder_name + "/resultados_exp1.csv";
+
+    // Crear la carpeta "data" si no existe
+    #if defined(_WIN32)
+        _mkdir(folder_name.c_str());
+    #else
+        mkdir(folder_name.c_str(), 0777);
+    #endif
+
+    // Comprobar si el archivo ya existe para saber si escribir la cabecera
+    std::ifstream check_file(file_path);
+    bool file_exists = check_file.good();
+    check_file.close();
+
+    // Abrir el archivo CSV en modo "append" (añadir al final)
+    std::ofstream csv_file(file_path, std::ios::app);
+
+    if (csv_file.is_open()) {
+        // Si el archivo es nuevo, escribimos los nombres de las columnas
+        if (!file_exists) {
+            csv_file << "tiempo_copia_H2D,tiempo_computo,tiempo_copia_D2H,tiempo_total\n";
+        }
+
+        // Guardar las variables del experimento actual (ejemplo usando tus constantes de exp2.cu)
+        csv_file << tiempoCopiaH2D << ","
+                << tiempoComputo << ","
+                << tiempoCopiaD2H << ","
+                << tiempoCopiaH2D + tiempoComputo + tiempoCopiaD2H << "\n";
+
+        csv_file.close();
+        std::cout << "✔ Datos guardados exitosamente en: " << file_path << std::endl;
+    } else {
+        std::cerr << "❌ Error: No se pudo abrir o crear el archivo CSV." << std::endl;
+    }
 
     delete[] h_dataset;
     delete[] h_cov;
