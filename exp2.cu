@@ -228,6 +228,7 @@ int main(int argc, char* argv[]) {
     // Liberación de la memoria que ya no se usará
     cudaFreeHost(h_mean_vector);
     cudaFreeHost(h_dataset);
+    cudaFreeHost(h_cv_matrix);
 
     cudaFree(d_mean_vector);
     cudaFree(d_dataset);
