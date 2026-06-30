@@ -225,6 +225,9 @@ int main(int argc, char* argv[]) {
     cudaEventRecord(end_calculation, 0);
     cudaEventSynchronize(end_calculation);
 
+    float calculation_time = 0.0f;
+    cudaEventElapsedTime(&calculation_time, start_calculation, end_calculation);
+
     // Liberación de la memoria que ya no se usará
     cudaFreeHost(h_mean_vector);
     cudaFreeHost(h_dataset);
@@ -233,11 +236,9 @@ int main(int argc, char* argv[]) {
     cudaFree(d_mean_vector);
     cudaFree(d_dataset);
     cudaFree(d_cv_matrix);
-
-    float calculation_time = 0.0f;
-    cudaEventElapsedTime(&calculation_time, start_calculation, end_calculation);
-
     
+    cudaEventDestroy(start_calculation);
+    cudaEventDestroy(end_calculation);
 
     std::cout << "Tiempo total de procesamiento: " << calculation_time << std::endl;
 
@@ -279,6 +280,5 @@ int main(int argc, char* argv[]) {
         std::cerr << "❌ Error: No se pudo abrir o crear el archivo CSV." << std::endl;
     }
     
-
     return 0;
 }
